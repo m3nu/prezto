@@ -1,0 +1,32 @@
+function prompt_manu_precmd {
+  git-info
+}
+
+function prompt_manu_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+  autoload colors; colors
+
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_manu_precmd
+
+  # Set git-info parameters.
+  zstyle ':prezto:module:git:info' verbose 'yes'
+  zstyle ':prezto:module:git:info:branch' format '%F{[145]}%b%f'
+  zstyle ':prezto:module:git:info:clean' format ' %F{[145]}✔%f'
+  zstyle ':prezto:module:git:info:dirty' format ' %F{[145]}✗%f'
+  zstyle ':prezto:module:git:info:keys' format \
+    'prompt' ' %F{[145]}(%f$(coalesce "%b" "%p" "%c")${git_info[rprompt]}%s%F{[145]})%f' \
+    'rprompt' '%C%D'
+
+  # Define prompts.
+  PROMPT='%{$fg_bold[green]%}%n@%m: %{$fg_bold[blue]%}%~%{$reset_color%}${(e)git_info[prompt]} $ '
+  # PROMPT='%~${(e)git_info[prompt]}$ '
+  RPROMPT=''
+}
+
+prompt_manu_setup "$@"
